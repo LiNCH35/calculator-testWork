@@ -11,10 +11,12 @@
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.1.0",
     "core-js": "^3.9.1",
-    "nuxt": "^2.15.3"
+    "nuxt": "^2.15.3",
+    "vuex-module-decorators": "^1.0.1"
   },
   "devDependencies": {
     "@nuxt/types": "^2.13.2",
-    "@nuxt/typescript-build": "^2.1.0"
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/vuetify": "^1.11.3"
   }
 }
