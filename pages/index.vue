@@ -1,75 +1,171 @@
 <template>
-  <div class="container">
+  <div class="index-page">
     <div>
-      <Logo />
-      <h1 class="title">
-        vozovoz-test
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
+      <h1>Рассчитать</h1>
+      <div>
+        <div class="calculator-layout-city d-flex">
+          <div>
+            <CalculatorCity
+              v-model="cityFrom"
+            ></CalculatorCity>
+            <TerminalRadio v-model="dispatchTerminal"></TerminalRadio>
+          </div>
+          <div class="icon-swap" @click="swap">
+            <img src="swap_horiz.svg" width="24" height="24">
+          </div>
+          <div>
+            <CalculatorCity
+              v-model="cityTo"
+            ></CalculatorCity>
+            <TerminalRadio v-model="destinationTerminal" destination></TerminalRadio>
+          </div>
+        </div>
+        <div class="calculator-params d-flex">
+          <NumericInput
+            v-model="weight"
+            :min="0.1"
+            :max="19999"
+            label="Вес"
+          >
+            <span>кг</span>
+          </NumericInput>
+          <NumericInput
+            v-model="volume"
+            :min="0.01"
+            :max="74"
+            label="Объём"
+          >
+            <span>м<sup>3</sup></span>
+          </NumericInput>
+        </div>
       </div>
+      <PriceView
+        class="calculator-price"
+        :price="price"
+      ></PriceView>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import {mapActions} from 'vuex';
+import CalculatorCity from "~/components/CalculatorCity.vue";
+import NumericInput from "~/components/NumericInput.vue";
+import TerminalRadio from "~/components/TerminalRadio.vue";
+import {getPrice} from "~/utils/api";
+import PriceView from "~/components/PriceView.vue";
 
-export default Vue.extend({})
+export default Vue.extend({
+  components: {PriceView, TerminalRadio, NumericInput, CalculatorCity},
+
+  data() {
+    return {
+      cityFrom: 'Москва',
+      cityTo: 'Санкт-Петербург',
+      weight: 0.9,
+      volume: 0.1,
+      dispatchTerminal: true,
+      destinationTerminal: true,
+      price: {},
+    }
+  },
+  watch: {
+    cityFrom() {
+      setTimeout(this.calculate, 0);
+    },
+    cityTo() {
+      setTimeout(this.calculate, 0);
+    },
+    weight() {
+      setTimeout(this.calculate, 0);
+    },
+    volume() {
+      setTimeout(this.calculate, 0);
+    },
+  },
+  methods: {
+    ...mapActions('cities', ['fetchCities']),
+    swap() {
+      let tmp = this.cityFrom;
+      this.cityFrom = this.cityTo;
+      this.cityTo = tmp;
+    },
+    calculate() {
+      this.price = getPrice({
+        cargo: {
+          dimension: {
+            quantity: 1,
+            weight:this.weight,
+            volume: this.volume,
+          },
+        },
+        gateway: {
+          dispatch: {
+            point: {
+              location: this.cityFrom,
+              terminal: 'default',
+            }
+          },
+          destination: {
+            point: {
+              location: this.cityTo,
+              terminal: 'default',
+            }
+          }
+        }
+      });
+    }
+  },
+  async mounted() {
+    await this.fetchCities();
+    this.calculate();
+  }
+})
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+<style scoped lang="scss">
+.index-page {
+  height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+  > div {
+    margin: auto;
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  }
 
-.title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
+  .calculator-layout-city {
+    .icon-swap {
+      margin: 12px;
+      cursor: pointer;
+    }
+  }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
+  .calculator-params {
+    padding: 0 8px;
+    > div:first-child {
+      margin-right: auto;
+    }
 
-.links {
-  padding-top: 15px;
+    ::v-deep input::-webkit-outer-spin-button,
+    ::v-deep input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  .calculator-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+
+<style lang="scss">
+.d-flex {
+  display: flex;
 }
 </style>
