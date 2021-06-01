@@ -19,15 +19,5 @@ export const actions: ActionTree<RootState, RootState> = {
   async fetchCities({ commit }) {
     let response = getCities();
     commit('SET_CITIES', response.data)
-    // console.log(JSON.stringify(
-    //   {
-    //     "object": "location",
-    //     "action": "get",
-    //     "params": {
-    //       "offset": 12,
-    //       "limit": 2
-    //     }
-    //   }
-    // ));
   },
 }
