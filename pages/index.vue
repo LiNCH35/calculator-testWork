@@ -70,11 +70,22 @@ export default Vue.extend({
       price: {},
     }
   },
+  computed: {
+    oneCityOrder() {
+      return this.cityFrom === this.cityTo;
+    }
+  },
   watch: {
     cityFrom() {
+      if (this.oneCityOrder && this.destinationTerminal) {
+        this.dispatchTerminal = false;
+      }
       setTimeout(this.calculate, 0);
     },
     cityTo() {
+      if (this.oneCityOrder && this.dispatchTerminal) {
+        this.destinationTerminal = false;
+      }
       setTimeout(this.calculate, 0);
     },
     weight() {
@@ -82,6 +93,17 @@ export default Vue.extend({
     },
     volume() {
       setTimeout(this.calculate, 0);
+    },
+
+    dispatchTerminal(value) {
+      if (this.oneCityOrder && value) {
+        this.destinationTerminal = false;
+      }
+    },
+    destinationTerminal(value) {
+      if (this.oneCityOrder && value) {
+        this.dispatchTerminal = false;
+      }
     },
   },
   methods: {
@@ -115,7 +137,7 @@ export default Vue.extend({
           }
         }
       });
-    }
+    },
   },
   async mounted() {
     await this.fetchCities();
