@@ -71,7 +71,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    oneCityOrder() {
+    oneCityOrder(): boolean {
       return this.cityFrom === this.cityTo;
     }
   },

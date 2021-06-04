@@ -43,13 +43,15 @@ export default Vue.extend({
       if (!this.placeholder) {
         return;
       }
-      this.localValue = this.cities.find(city => city.name === this.placeholder);
+      this.localValue = this.cities.find((city: {name: string}) => city.name === this.placeholder);
       this.placeholder = null;
     }
   },
 
   computed: {
-    ...mapState('cities', ['cities']),
+    ...mapState('cities', {
+      cities: 'cities',
+    }),
   },
 })
 </script>

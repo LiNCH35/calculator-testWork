@@ -63,7 +63,10 @@ export default Vue.extend({
     inputHandler(value: number) {
       if (value < this.min || value > this.max) {
         this.localValue = Math.max(Math.min(value, this.max), this.min);
-        this.$refs.numericInput.blur(); // При снятии фокуса значение выставляется в пределах границы
+        // При снятии фокуса значение выставляется в пределах границы
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }
     },
     changeHandler(value: number) {
